@@ -1,19 +1,15 @@
 package com.gptmade.pillpal;
 
 import android.app.Activity;
+import android.app.AlarmManager;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
-import android.icu.text.SimpleDateFormat;
+import android.app.PendingIntent;
+import android.content.Intent;
 import android.os.Bundle;
-import android.widget.TextView;
-
-import androidx.core.app.NotificationCompat;
-import androidx.core.app.NotificationManagerCompat;
-
+import android.os.SystemClock;
 import com.gptmade.pillpal.databinding.ActivityMainBinding;
 
-import java.util.Date;
-import java.util.Locale;
 
 public class MainActivity extends Activity {
     
@@ -26,6 +22,15 @@ public class MainActivity extends Activity {
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
+        Intent intent = new Intent(this, AlarmReceiver.class);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, intent, 0);
+
+        AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+        // Set the alarm to start at the specified time and repeat at the specified interval
+        long interval = 6000; // 60 seconds
+        long triggerTime = SystemClock.elapsedRealtime() + interval;
+        alarmManager.setInexactRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, triggerTime, interval, pendingIntent);
+
         //Create a High Importance notification Channel
         NotificationChannel channel = new NotificationChannel(
                 "medication_reminder",
@@ -37,21 +42,5 @@ public class MainActivity extends Activity {
         // or other notification behaviors after this
         NotificationManager notificationManagerService = getSystemService(NotificationManager.class);
         notificationManagerService.createNotificationChannel(channel);
-
-        //CREATE THE NOTIFICATION
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, "medication_reminder")
-                .setSmallIcon(R.drawable.notification_icon)
-                .setContentTitle("Time to take your medication")
-                .setContentText("Don't forget to take your medication")
-                .setPriority(NotificationCompat.PRIORITY_HIGH)
-                .setVibrate(new long[] { 1000, 1000, 1000, 1000, 1000 })
-                .setAutoCancel(true);
-
-        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
-
-        Date now = new Date();
-        int notificationId = Integer.parseInt(new SimpleDateFormat("MMddHHmmss",  Locale.US).format(now));
-        notificationManager.notify(notificationId, builder.build());
-
     }
 }
