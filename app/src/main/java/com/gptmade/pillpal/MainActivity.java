@@ -8,6 +8,10 @@ import android.app.PendingIntent;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.SystemClock;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
+
 import com.gptmade.pillpal.databinding.ActivityMainBinding;
 
 
@@ -42,5 +46,11 @@ public class MainActivity extends Activity {
         // or other notification behaviors after this
         NotificationManager notificationManagerService = getSystemService(NotificationManager.class);
         notificationManagerService.createNotificationChannel(channel);
+    }
+
+    public void goToSettings(View view) {
+        // Start the SettingsActivity
+        Intent intent = new Intent(this, SettingsActivity.class);
+        startActivity(intent);
     }
 }
